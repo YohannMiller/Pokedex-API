@@ -1,26 +1,43 @@
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #ffeb3b, #ff9800);
-    color: #333;
+    background: linear-gradient(135deg, #2d2d2d, #e3350d);
+    color: #fff;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    transition: background 0.5s ease-in-out;
+    transition: background 0.5s;
 }
 
 h1 {
-    color: #ff6347;
+    color: #fff;
     margin-top: 20px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    text-shadow: 2px 2px 8px #222;
     font-size: 2.5rem;
-    animation: slideIn 1s ease-out;
-    background: linear-gradient(135deg, #ffeb3b, #ff9800);
-    padding: 10px 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background: #e3350d;
+    padding: 10px 30px;
+    border-radius: 20px 20px 8px 8px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    border: 4px solid #fff;
+}
+
+.search-filter {
+    display: flex;
+    gap: 16px;
+    margin: 24px 0 0 0;
+}
+
+#search, #type-filter {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 2px solid #e3350d;
+    font-size: 1rem;
+    outline: none;
+    background: #fff;
+    color: #222;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 #pokedex {
@@ -32,65 +49,66 @@ h1 {
 }
 
 .pokemon-wrapper {
-    border: solid 1px #ccc;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #fffde7, #fff9c4);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 4px solid #e3350d;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #fff, #f7dada 80%);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
     margin: 16px;
-    padding: 16px;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background 0.3s ease-in-out;
-    width: 200px;
+    padding: 16px 8px 24px 8px;
+    transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+    width: 210px;
     text-align: center;
     opacity: 0;
     position: relative;
+    overflow: hidden;
+}
+
+.pokemon-wrapper:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 12px; left: 12px;
+    width: 18px; height: 18px;
+    background: #3b4cca;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 0 8px #3b4cca;
 }
 
 .pokemon-wrapper:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: scale(1.06);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+    background: linear-gradient(135deg, #fff, #ffe0e0 80%);
 }
 
 .pokemon-img {
-    width: 100px;
-    transition: transform 0.3s ease-in-out;
+    width: 110px;
+    margin: 0 auto 8px auto;
+    display: block;
+    transition: transform 0.3s;
 }
 
 .pokemon-img:hover {
-    transform: rotate(10deg);
+    transform: rotate(8deg) scale(1.1);
 }
 
 h2 {
-    font-size: 1.5rem;
-    color: #333;
-    margin: 10px 0;
+    font-size: 1.3rem;
+    color: #e3350d;
+    margin: 10px 0 4px 0;
+    text-shadow: 1px 1px 0 #fff;
 }
 
 p {
     font-size: 1rem;
-    color: #666;
+    color: #333;
     margin: 5px 0;
 }
 
-.back-arrow {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 2rem;
-    color: #ff6347;
-    cursor: pointer;
-    transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
-}
-
-.back-arrow:hover {
-    color: #ff4500;
-    transform: scale(1.2);
-}
-
-/* Styles pour l'affichage détaillé du Pokémon */
 .pokemon-detail {
     transform: scale(1.2);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-    width: 300px;
+    width: 320px;
     animation: zoomIn 0.5s ease-in-out;
     background: linear-gradient(135deg, #e0f7fa, #80deea);
 }
@@ -108,6 +126,41 @@ p {
     margin: 5px 0;
     font-size: 1rem;
     color: #333;
+}
+
+.back-arrow {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 2rem;
+    color: #e3350d;
+    cursor: pointer;
+    transition: color 0.3s, transform 0.3s;
+    z-index: 2;
+}
+
+.back-arrow:hover {
+    color: #3b4cca;
+    transform: scale(1.2);
+}
+
+.poke-blue-dot {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 18px;
+    height: 18px;
+    background: #3b4cca;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 0 8px #3b4cca;
+    cursor: pointer;
+    z-index: 10;
+    transition: box-shadow 0.2s;
+}
+
+.poke-blue-dot:hover {
+    box-shadow: 0 0 16px #3b4cca, 0 0 8px #fff;
 }
 
 @keyframes zoomIn {

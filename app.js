@@ -1,114 +1,121 @@
 // Lien pour l'API monstre de poche
 let apiLink = "https://pokebuildapi.fr/api/v1/pokemon"
 
-// Sélectionner l'élément où les Pokémon seront affichés
 const pokedex = document.getElementById("pokedex")
+const searchInput = document.getElementById("search")
+const typeFilter = document.getElementById("type-filter")
 
-// Utiliser Fetch pour faire la requête GET
+let allPokemons = []
+let allTypes = new Set()
+
 fetch(apiLink)
-    .then(res => res.json()) // Traduire la réponse depuis JSON
+    .then(res => res.json())
     .then(data => {
-        console.log('Données récupérées:', data); // Log des données récupérées
-        // Boucler dans le tableau de Pokémon "data"
-        data.forEach((pokemon, index) => {
-            // Récupérer les détails de chaque Pokémon
-            let name = pokemon.name
-            let id = pokemon.id
-            let image = pokemon.image
-            let type = pokemon.apiTypes.map(typeInfo => typeInfo.name).join(", ")
-            let stats = pokemon.stats
-
-            // Créer les éléments HTML pour afficher les détails du Pokémon
-            let wrapper = document.createElement("div")
-            let h2 = document.createElement("h2")
-            let p = document.createElement("p")
-            let img = document.createElement("img")
-            let statsDiv = document.createElement("div")
-            let backArrow = document.createElement("div")
-
-            // Ajouter des classes CSS aux éléments HTML créés
-            wrapper.classList.add("pokemon-wrapper")
-            img.classList.add("pokemon-img")
-            statsDiv.classList.add("pokemon-stats")
-            backArrow.classList.add("back-arrow")
-            backArrow.innerHTML = "&#8592;" // Flèche gauche
-
-            // Ajouter des animations de chargement
-            wrapper.style.opacity = 0;
-            wrapper.style.transform = `translateX(${index % 2 === 0 ? '-' : ''}100vw)`;
-
-            // Donner du contenu aux éléments HTML
-            h2.textContent = `${name} (#${id})`
-            p.textContent = `Type: ${type}`
-            img.src = image
-
-            // Ajouter les statistiques du Pokémon
-            statsDiv.innerHTML = `
-                <p>HP: ${stats.HP}</p>
-                <p>Attack: ${stats.attack}</p>
-                <p>Defense: ${stats.defense}</p>
-                <p>Special Attack: ${stats.special_attack}</p>
-                <p>Special Defense: ${stats.special_defense}</p>
-                <p>Speed: ${stats.speed}</p>
-            `
-
-            // Ajouter un écouteur d'événement pour afficher uniquement le Pokémon cliqué
-            wrapper.addEventListener('click', (event) => {
-                // Vérifier si le clic est sur la flèche de retour
-                if (event.target.classList.contains('back-arrow')) {
-                    return;
-                }
-
-                // Masquer tous les autres Pokémon
-                document.querySelectorAll('.pokemon-wrapper').forEach(el => {
-                    el.style.display = 'none';
-                });
-                // Afficher uniquement le Pokémon cliqué avec des animations supplémentaires
-                wrapper.style.display = 'block';
-                wrapper.classList.add('pokemon-detail');
-
-                // Ajouter la flèche de retour
-                backArrow.addEventListener('click', (event) => {
-                    event.stopPropagation(); // Empêcher la propagation du clic au wrapper
-                    // Ajouter l'animation de retour
-                    wrapper.style.animation = 'slideOut 0.5s ease-in-out';
-                    setTimeout(() => {
-                        // Changer la couleur de fond de la page
-                        document.body.style.background = 'linear-gradient(135deg, #ffeb3b, #ff9800)';
-                        // Afficher tous les Pokémon
-                        document.querySelectorAll('.pokemon-wrapper').forEach(el => {
-                            el.style.display = 'block';
-                            el.classList.remove('pokemon-detail');
-                            el.style.animation = 'slideIn 0.5s ease-in-out';
-                        });
-                        // Supprimer les statistiques du Pokémon
-                        document.querySelectorAll('.pokemon-stats').forEach(el => {
-                            el.remove();
-                        });
-                        // Supprimer la flèche de retour
-                        backArrow.remove();
-                    }, 500); // Durée de l'animation
-                });
-                // Ajouter la flèche de retour uniquement s'il n'existe pas déjà
-                if (!wrapper.querySelector('.back-arrow')) {
-                    wrapper.appendChild(backArrow);
-                }
-                // Ajouter les statistiques du Pokémon
-                if (!wrapper.querySelector('.pokemon-stats')) {
-                    wrapper.appendChild(statsDiv);
-                }
-            });
-
-            // Insérer les éléments sur la page HTML
-            wrapper.append(h2, img, p)
-            pokedex.appendChild(wrapper)
-
-            // Ajouter l'animation de glissement vers le milieu
-            setTimeout(() => {
-                wrapper.style.transition = 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out';
-                wrapper.style.transform = 'translateX(0)';
-                wrapper.style.opacity = 1;
-            }, 100 * index);
+        allPokemons = data
+        // Récupérer tous les types uniques
+        data.forEach(pokemon => {
+            pokemon.apiTypes.forEach(typeInfo => allTypes.add(typeInfo.name))
         })
+        // Remplir le select des types
+        allTypes.forEach(type => {
+            const option = document.createElement("option")
+            option.value = type
+            option.textContent = type
+            typeFilter.appendChild(option)
+        })
+        renderPokemons(data)
     })
-    .catch(error => console.log('Erreur:', error)) // Log des erreurs
+    .catch(error => console.log('Erreur:', error))
+
+function renderPokemons(pokemons) {
+    pokedex.innerHTML = ""
+    pokemons.forEach((pokemon, index) => {
+        let name = pokemon.name
+        let id = pokemon.id
+        let image = pokemon.image
+        let type = pokemon.apiTypes.map(typeInfo => typeInfo.name).join(", ")
+        let stats = pokemon.stats
+
+        let wrapper = document.createElement("div")
+        let h2 = document.createElement("h2")
+        let p = document.createElement("p")
+        let img = document.createElement("img")
+        let statsDiv = document.createElement("div")
+
+        wrapper.classList.add("pokemon-wrapper")
+        img.classList.add("pokemon-img")
+        statsDiv.classList.add("pokemon-stats")
+
+        wrapper.style.opacity = 0;
+        wrapper.style.transform = `translateX(${index % 2 === 0 ? '-' : ''}100vw)`;
+
+        h2.textContent = `${name} (#${id})`
+        p.textContent = `Type: ${type}`
+        img.src = image
+
+        statsDiv.innerHTML = `
+            <p>HP: ${stats.HP}</p>
+            <p>Attack: ${stats.attack}</p>
+            <p>Defense: ${stats.defense}</p>
+            <p>Special Attack: ${stats.special_attack}</p>
+            <p>Special Defense: ${stats.special_defense}</p>
+            <p>Speed: ${stats.speed}</p>
+        `
+
+        // Affichage des détails au clic sur la carte (hors point bleu)
+        wrapper.addEventListener('click', function(event) {
+            // Si on clique sur le point bleu, on ne fait rien ici
+            if (event.target.classList.contains('poke-blue-dot')) return;
+
+            document.querySelectorAll('.pokemon-wrapper').forEach(el => {
+                el.style.display = 'none';
+            });
+            wrapper.style.display = 'block';
+            wrapper.classList.add('pokemon-detail');
+            if (!wrapper.querySelector('.pokemon-stats')) wrapper.appendChild(statsDiv);
+        });
+
+        // Ajout du point bleu interactif
+        let blueDot = document.createElement('div');
+        blueDot.className = 'poke-blue-dot';
+        wrapper.appendChild(blueDot);
+
+        // Gestion du retour en arrière via le point bleu
+        blueDot.addEventListener('click', function(event) {
+            event.stopPropagation();
+            // On revient à la liste
+            document.querySelectorAll('.pokemon-wrapper').forEach(el => {
+                el.style.display = 'block';
+                el.classList.remove('pokemon-detail');
+            });
+            // On retire les stats détaillées si besoin
+            if (wrapper.querySelector('.pokemon-stats')) {
+                statsDiv.remove();
+            }
+        });
+
+        wrapper.append(h2, img, p)
+        pokedex.appendChild(wrapper)
+
+        setTimeout(() => {
+            wrapper.style.transition = 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out';
+            wrapper.style.transform = 'translateX(0)';
+            wrapper.style.opacity = 1;
+        }, 100 * index);
+    })
+}
+
+// Recherche et filtre
+function filterPokemons() {
+    const searchValue = searchInput.value.toLowerCase()
+    const typeValue = typeFilter.value
+    let filtered = allPokemons.filter(pokemon => {
+        const matchName = pokemon.name.toLowerCase().includes(searchValue)
+        const matchType = typeValue === "" || pokemon.apiTypes.some(t => t.name === typeValue)
+        return matchName && matchType
+    })
+    renderPokemons(filtered)
+}
+
+searchInput.addEventListener("input", filterPokemons)
+typeFilter.addEventListener("change", filterPokemons)
